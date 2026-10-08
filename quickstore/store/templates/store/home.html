@@ -1,0 +1,179 @@
+{% extends 'store/base.html' %}
+
+{% block title %}QuickBite - Family & Kids Express{% endblock %}
+
+{% block content %}
+<!-- Hero Banner Section -->
+<div class="relative overflow-hidden rounded-3xl family-gradient p-8 md:p-12 mb-10 shadow-2xl border border-pink-500/20">
+    <div class="relative z-10 max-w-2xl">
+        <span class="inline-block bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full mb-4 tracking-wide shadow-sm">
+            🌟 MOM'S CHOICE • KIDS' FAVORITE 🚀
+        </span>
+        <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-4 tracking-tight">
+            Delivering Joy & Goodies in 10 Mins!
+        </h1>
+        <p class="text-pink-100 text-sm md:text-base font-medium mb-8 leading-relaxed">
+            From wholesome breakfast milk & healthy snacks to surprise toys and sweet treats—everything your family needs, instantly.
+        </p>
+        
+        <!-- Search Bar -->
+        <form method="GET" action="" class="flex items-center bg-slate-900/90 backdrop-blur-md p-2 rounded-2xl border border-pink-500/30 shadow-2xl">
+            <input type="text" name="q" placeholder="Search toys, chocolates, milk, diapers..." 
+                   class="flex-grow bg-transparent px-4 py-2 text-sm text-white placeholder-slate-400 focus:outline-none">
+            <button type="submit" class="bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-500 hover:to-rose-400 text-white px-6 py-3 rounded-xl font-bold text-sm transition shadow-lg shadow-pink-600/30 cursor-pointer">
+                Search
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Category Navigation Pills -->
+<div class="flex items-center space-x-3 overflow-x-auto pb-4 mb-8 no-scrollbar">
+    <a href="{% url 'home' %}" class="bg-gradient-to-r from-pink-600 to-rose-500 text-white font-bold px-5 py-2.5 rounded-2xl text-xs md:text-sm whitespace-nowrap shadow-lg shadow-pink-600/20 transition">
+        ✨ All Treasures
+    </a>
+    <a href="?category=Snacks+%26+Treats" class="bg-slate-900/80 hover:bg-slate-800 text-slate-300 font-semibold px-5 py-2.5 rounded-2xl text-xs md:text-sm whitespace-nowrap border border-slate-800 hover:border-pink-500/30 transition">
+        Snacks & Treats
+    </a>
+    <a href="?category=Toys+%26+Fun" class="bg-slate-900/80 hover:bg-slate-800 text-slate-300 font-semibold px-5 py-2.5 rounded-2xl text-xs md:text-sm whitespace-nowrap border border-slate-800 hover:border-pink-500/30 transition">
+        Toys & Fun
+    </a>
+    <a href="?category=Dairy+%26+Breakfast" class="bg-slate-900/80 hover:bg-slate-800 text-slate-300 font-semibold px-5 py-2.5 rounded-2xl text-xs md:text-sm whitespace-nowrap border border-slate-800 hover:border-pink-500/30 transition">
+        Dairy & Breakfast
+    </a>
+    <a href="?category=Family+Essentials" class="bg-slate-900/80 hover:bg-slate-800 text-slate-300 font-semibold px-5 py-2.5 rounded-2xl text-xs md:text-sm whitespace-nowrap border border-slate-800 hover:border-pink-500/30 transition">
+        Family Essentials
+    </a>
+</div>
+
+<!-- Product Grid Section -->
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+    {% for product in products %}
+    <div class="bg-slate-900/90 backdrop-blur-xl rounded-3xl p-4 border border-slate-800 hover:border-pink-500/50 hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 flex flex-col justify-between group">
+        <div>
+            <!-- Creative Circular Visual Container -->
+            <div class="relative w-32 h-32 mx-auto rounded-full mb-4 flex items-center justify-center overflow-hidden border-2 border-slate-700/80 transition group-hover:scale-105 duration-300 shadow-xl
+                {% if 'Teddy' in product.name or 'Blocks' in product.name or 'Car' in product.name %}
+                    bg-gradient-to-tr from-violet-600/30 via-indigo-600/20 to-purple-900/40
+                {% elif 'Milk' in product.name or 'Yogurt' in product.name or 'Cereal' in product.name %}
+                    bg-gradient-to-tr from-cyan-600/30 via-sky-600/20 to-blue-900/40
+                {% elif 'Wipes' in product.name %}
+                    bg-gradient-to-tr from-emerald-600/30 via-teal-600/20 to-slate-900/40
+                {% else %}
+                    bg-gradient-to-tr from-pink-600/30 via-rose-600/20 to-amber-900/40
+                {% endif %}
+            ">
+                {% if product.is_featured %}
+                <span class="absolute top-1 left-2 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider shadow-md z-10">
+                    🌟 SPECIAL
+                </span>
+                {% endif %}
+
+                <!-- Central Animated Circular Icon -->
+                <div class="text-5xl transform group-hover:scale-125 group-hover:rotate-12 transition duration-300 drop-shadow-2xl filter saturate-150">
+                    {% if "Teddy" in product.name %}🧸
+                    {% elif "Blocks" in product.name %}🧱
+                    {% elif "Car" in product.name %}🏎️
+                    {% elif "Milk" in product.name %}🥛
+                    {% elif "Yogurt" in product.name %}🥣
+                    {% elif "Cereal" in product.name %}🌾
+                    {% elif "Gummy" in product.name %}🍬
+                    {% elif "Cookies" in product.name %}🍪
+                    {% elif "Juice" in product.name %}🧃
+                    {% elif "Wipes" in product.name %}💧
+                    {% else %}🎁
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Product Title & Weight -->
+            <h3 class="font-bold text-slate-100 text-sm mb-1 line-clamp-2 text-center group-hover:text-pink-400 transition">
+                {{ product.name }}
+            </h3>
+            <p class="text-xs text-slate-400 font-medium mb-3 text-center flex items-center justify-center space-x-1">
+                <span>📦</span>
+                <span>{{ product.weight }}</span>
+            </p>
+        </div>
+
+        <!-- Price & Cart Button Section -->
+        <div class="flex items-center justify-between pt-3 border-t border-slate-800/80">
+            <div>
+                <span class="block text-base font-black text-white">₹{{ product.price }}</span>
+                <span class="block text-[11px] text-slate-500 line-through">₹{{ product.mrp }}</span>
+            </div>
+
+            <!-- Cart Control Container with High Stacking Index -->
+            <div id="cart-control-{{ product.id }}" class="relative z-20">
+                {% if product.user_cart_qty > 0 %}
+                <div class="flex items-center bg-rose-600 text-white rounded-xl overflow-hidden shadow-sm">
+                    <button type="button" onclick="updateCart(event, {{ product.id }}, 'decrease')" class="px-2.5 py-1 text-xs font-bold hover:bg-rose-700 transition cursor-pointer">-</button>
+                    <span class="cart-qty px-2 text-xs font-black">{{ product.user_cart_qty }}</span>
+                    <button type="button" onclick="updateCart(event, {{ product.id }}, 'increase')" class="px-2.5 py-1 text-xs font-bold hover:bg-rose-700 transition cursor-pointer">&#43;</button>
+                </div>
+                {% else %}
+                <button type="button" onclick="updateCart(event, {{ product.id }}, 'increase')" class="bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-500 hover:to-rose-400 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md shadow-pink-600/30 flex items-center space-x-1 transform active:scale-95 cursor-pointer pointer-events-auto">
+                    <span>ADD</span>
+                    <span class="text-sm">+</span>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full text-center py-16 text-slate-400">
+        <p class="text-4xl mb-2">🔍</p>
+        <p class="font-bold text-base">No family treasures found matching your search.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- JavaScript for Lightning-Fast Zero-Refresh AJAX Cart Control with Rapid-Click Guard -->
+<script>
+    let isProcessing = false;
+
+    function updateCart(event, productId, action) {
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const url = action === 'increase' ? `/cart/add/${productId}/` : `/cart/decrease/${productId}/`;
+        const container = document.getElementById(`cart-control-${productId}`);
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            isProcessing = false;
+            if (data.qty > 0) {
+                container.innerHTML = `
+                    <div class="flex items-center bg-rose-600 text-white rounded-xl overflow-hidden shadow-sm">
+                        <button type="button" onclick="updateCart(event, ${productId}, 'decrease')" class="px-2.5 py-1 text-xs font-bold hover:bg-rose-700 transition cursor-pointer">-</button>
+                        <span class="cart-qty px-2 text-xs font-black">${data.qty}</span>
+                        <button type="button" onclick="updateCart(event, ${productId}, 'increase')" class="px-2.5 py-1 text-xs font-bold hover:bg-rose-700 transition cursor-pointer">&#43;</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button type="button" onclick="updateCart(event, ${productId}, 'increase')" class="bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-500 hover:to-rose-400 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md shadow-pink-600/30 flex items-center space-x-1 transform active:scale-95 cursor-pointer pointer-events-auto">
+                        <span>ADD</span>
+                        <span class="text-sm">+</span>
+                    </button>
+                `;
+            }
+        })
+        .catch(error => {
+            isProcessing = false;
+            console.error('Error updating cart:', error);
+        });
+    }
+</script>
+{% endblock %}

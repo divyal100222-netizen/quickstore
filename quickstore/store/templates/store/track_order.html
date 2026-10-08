@@ -1,0 +1,311 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<!-- Include Leaflet CSS & JS for OpenStreetMap -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<div class="max-w-3xl mx-auto py-4 space-y-4">
+    <div class="bg-slate-900/85 backdrop-blur-xl border border-pink-500/30 p-6 rounded-3xl shadow-2xl space-y-6 relative">
+        
+        <!-- Header & Countdown Timer -->
+        <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+            <div>
+                <h1 class="text-xl md:text-2xl font-black text-white">Live Delivery Tracking 🚀</h1>
+                <p class="text-xs text-gray-400 mt-1">Order #{{ order.id }} • Status: <span id="status-text" class="text-pink-400 font-bold">{{ order.status }}</span></p>
+            </div>
+            
+            <!-- Countdown Badge -->
+            <div class="bg-gradient-to-r from-pink-600 to-rose-600 text-white px-4 py-2 rounded-2xl shadow-lg text-right">
+                <p id="timer-label" class="text-[10px] uppercase font-bold tracking-wider opacity-90">Arriving in</p>
+                <p id="countdown-timer" class="text-base font-black tracking-tight">07:30</p>
+            </div>
+        </div>
+
+        <!-- Interactive Map Container -->
+        <div class="relative w-full h-64 rounded-2xl overflow-hidden border border-pink-500/40 shadow-inner">
+            <div id="delivery-map" class="w-full h-full z-10"></div>
+        </div>
+
+        <!-- Delivery Partner Contact Card -->
+        <div class="bg-slate-950/80 border border-pink-500/20 p-4 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-pink-500/20 border border-pink-500/30 rounded-full flex items-center justify-center text-xl">
+                    🛵
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-white">Rahul Kumar (Delivery Partner)</h4>
+                    <p id="rider-status" class="text-[11px] text-emerald-400 font-medium">★ 4.9 • Moving Smoothly 🟢</p>
+                </div>
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="alert('Calling delivery partner... (+91 98765 43210)')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3.5 py-2 rounded-xl font-bold shadow transition flex items-center space-x-1">
+                    <span>📞 Call</span>
+                </button>
+                <button onclick="toggleChatDrawer()" class="bg-slate-800 hover:bg-slate-700 border border-gray-700 text-white text-xs px-3.5 py-2 rounded-xl font-bold transition flex items-center space-x-1">
+                    <span>💬 Chat</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tip Your Delivery Partner Chips -->
+        <div class="bg-slate-950/60 border border-gray-800 p-4 rounded-2xl">
+            <p class="text-xs font-bold text-gray-300 mb-2">💖 Show appreciation with a tip for Rahul:</p>
+            <div class="grid grid-cols-4 gap-2">
+                <button onclick="setTip(10, this)" class="tip-btn bg-slate-800 hover:bg-pink-600/30 border border-gray-700 text-white text-xs font-bold py-2 rounded-xl transition">₹10</button>
+                <button onclick="setTip(20, this)" class="tip-btn bg-slate-800 hover:bg-pink-600/30 border border-gray-700 text-white text-xs font-bold py-2 rounded-xl transition">₹20</button>
+                <button onclick="setTip(50, this)" class="tip-btn bg-slate-800 hover:bg-pink-600/30 border border-gray-700 text-white text-xs font-bold py-2 rounded-xl transition">₹50</button>
+                <button onclick="setTip(100, this)" class="tip-btn bg-slate-800 hover:bg-pink-600/30 border border-gray-700 text-white text-xs font-bold py-2 rounded-xl transition">₹100</button>
+            </div>
+            <p id="tip-msg" class="text-[11px] text-pink-400 font-semibold mt-2 hidden">Thank you! Tip added to your order.</p>
+        </div>
+
+        <!-- Visual Progress Steps -->
+        <div class="grid grid-cols-3 gap-3 text-center">
+            <div id="step-1" class="bg-pink-600/20 border border-pink-500/40 p-3 rounded-2xl">
+                <div class="text-lg mb-1">📦</div>
+                <div class="text-xs font-bold text-pink-300">Order Packed</div>
+            </div>
+            <div id="step-2" class="bg-pink-600/20 border border-pink-500/40 p-3 rounded-2xl">
+                <div class="text-lg mb-1">🛵</div>
+                <div class="text-xs font-bold text-pink-300">Out for Delivery</div>
+            </div>
+            <div id="step-3" class="bg-slate-800/60 border border-gray-700 p-3 rounded-2xl opacity-60">
+                <div class="text-lg mb-1">✨</div>
+                <div class="text-xs font-bold text-gray-300">Delivered</div>
+            </div>
+        </div>
+
+        <!-- Delivery Address & Invoice Summary Box -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-950/60 border border-pink-500/20 p-4 rounded-2xl">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Delivering to Address:</h3>
+                <p class="text-sm font-medium text-white">{{ order.address }}</p>
+            </div>
+            <div class="bg-slate-950/60 border border-pink-500/20 p-4 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Order Summary:</h3>
+                    <p class="text-xs text-gray-300">Order ID: #{{ order.id }} • Paid via UPI</p>
+                </div>
+                <button onclick="openInvoice()" class="mt-2 text-left text-xs font-bold text-pink-400 hover:underline flex items-center space-x-1">
+                    <span>📄 View Digital Tax Invoice</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex space-x-3 pt-2">
+            <a href="{% url 'home' %}" class="flex-1 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-black py-3 rounded-2xl text-xs uppercase tracking-wider text-center shadow-lg transition">
+                Back to Store 🛍️
+            </a>
+            <a href="{% url 'profile' %}" class="bg-slate-800 hover:bg-slate-700 text-gray-200 font-bold px-6 py-3 rounded-2xl text-xs uppercase tracking-wider border border-gray-700 text-center transition">
+                View Profile 👤
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<!-- LIVE CHAT DRAWER MODAL -->
+<div id="chat-drawer" class="fixed inset-y-0 right-0 z-50 w-80 bg-slate-950 border-l border-pink-500/30 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-4 bg-slate-900 border-b border-gray-800 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 bg-pink-500/20 rounded-full flex items-center justify-center text-sm">🛵</div>
+            <div>
+                <h3 class="text-xs font-bold text-white">Rahul Kumar</h3>
+                <p class="text-[10px] text-emerald-400 font-medium">Online • Delivery Partner</p>
+            </div>
+        </div>
+        <button onclick="toggleChatDrawer()" class="text-gray-400 hover:text-white font-bold text-sm">✕</button>
+    </div>
+
+    <!-- Message History -->
+    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+        <div class="bg-slate-900 p-3 rounded-2xl border border-gray-800 text-gray-300 max-w-[85%]">
+            Hi! I have picked up your order and I am on my way to your location. 🚀
+        </div>
+    </div>
+
+    <!-- Quick Chips -->
+    <div class="p-2 bg-slate-900/60 border-t border-gray-800 flex gap-1 overflow-x-auto text-[10px]">
+        <button onclick="sendQuickMsg('Please ring the doorbell')" class="bg-slate-800 text-gray-300 px-2.5 py-1 rounded-full whitespace-nowrap hover:bg-pink-600/30">Ring doorbell</button>
+        <button onclick="sendQuickMsg('Leave at the door')" class="bg-slate-800 text-gray-300 px-2.5 py-1 rounded-full whitespace-nowrap hover:bg-pink-600/30">Leave at door</button>
+    </div>
+
+    <!-- Input Box -->
+    <div class="p-3 bg-slate-900 border-t border-gray-800 flex items-center space-x-2">
+        <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 bg-slate-950 border border-gray-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500">
+        <button onclick="sendTypedMsg()" class="bg-pink-600 hover:bg-pink-500 text-white px-3 py-2 rounded-xl font-bold text-xs">Send</button>
+    </div>
+</div>
+
+<!-- DIGITAL TAX INVOICE MODAL -->
+<div id="invoice-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-pink-500/40 w-full max-w-md p-6 rounded-3xl shadow-2xl space-y-4 text-white">
+        <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+            <h2 class="text-base font-black text-pink-400">QuickBite Tax Invoice 🧾</h2>
+            <button onclick="closeInvoice()" class="text-gray-400 hover:text-white font-bold">✕</button>
+        </div>
+        <div class="space-y-2 text-xs text-gray-300">
+            <div class="flex justify-between"><span>Order ID:</span><span class="font-bold text-white">#{{ order.id }}</span></div>
+            <div class="flex justify-between"><span>Dark Store Hub:</span><span class="font-bold text-white">Mudaliarpet Express</span></div>
+            <div class="flex justify-between"><span>Delivery Address:</span><span class="font-bold text-white">{{ order.address }}</span></div>
+            <hr class="border-gray-800 my-2">
+            <div class="flex justify-between"><span>Item Total:</span><span>₹349.00</span></div>
+            <div class="flex justify-between"><span>Handling & Packing:</span><span>₹15.00</span></div>
+            <div class="flex justify-between"><span>Lightning Delivery Fee:</span><span>₹25.00</span></div>
+            <div class="flex justify-between"><span>GST & Taxes:</span><span>₹18.50</span></div>
+            <hr class="border-gray-800 my-2">
+            <div class="flex justify-between text-sm font-black text-pink-400"><span>Total Paid:</span><span>₹407.50</span></div>
+        </div>
+        <button onclick="window.print()" class="w-full bg-slate-800 hover:bg-slate-700 text-xs font-bold py-3 rounded-xl border border-gray-700 transition">Print / Download PDF</button>
+    </div>
+</div>
+
+<!-- Map Script with Physics & Chat/Invoice Handlers -->
+<script>
+    function setTip(amount, btn) {
+        document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('border-pink-500', 'bg-pink-600/40'));
+        btn.classList.add('border-pink-500', 'bg-pink-600/40');
+        const msg = document.getElementById('tip-msg');
+        msg.innerText = `❤️ Thank you! ₹${amount} tip added to Rahul's earnings.`;
+        msg.classList.remove('hidden');
+    }
+
+    function toggleChatDrawer() {
+        const drawer = document.getElementById('chat-drawer');
+        drawer.classList.toggle('translate-x-full');
+    }
+
+    function sendQuickMsg(text) {
+        appendMessage(text, 'user');
+        setTimeout(() => {
+            appendMessage("Got it! I will follow your instruction.", 'rider');
+        }, 1000);
+    }
+
+    function sendTypedMsg() {
+        const input = document.getElementById('chat-input');
+        if (!input.value.trim()) return;
+        appendMessage(input.value, 'user');
+        const userText = input.value;
+        input.value = '';
+        setTimeout(() => {
+            appendMessage(`Received "${userText}". Heading your way fast! 🛵`, 'rider');
+        }, 1200);
+    }
+
+    function appendMessage(text, sender) {
+        const container = document.getElementById('chat-messages');
+        const div = document.createElement('div');
+        div.className = sender === 'user' 
+            ? "bg-pink-600 text-white p-3 rounded-2xl ml-auto max-w-[85%]" 
+            : "bg-slate-900 p-3 rounded-2xl border border-gray-800 text-gray-300 max-w-[85%]";
+        div.innerText = text;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function openInvoice() {
+        document.getElementById('invoice-modal').classList.remove('hidden');
+        document.getElementById('invoice-modal').classList.add('flex');
+    }
+
+    function closeInvoice() {
+        document.getElementById('invoice-modal').classList.remove('flex');
+        document.getElementById('invoice-modal').classList.add('hidden');
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const storeLatLng = [11.9150, 79.8120];
+        const userLatLng = [11.9110, 79.8220];
+
+        const map = L.map('delivery-map', { zoomControl: false }).setView(userLatLng, 15);
+
+        L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            attribution: '&copy; Wikimedia maps | OpenStreetMap'
+        }).addTo(map);
+
+        const storeIcon = L.divIcon({
+            html: '<div style="background:#ec4899; color:white; padding:6px; border-radius:50%; font-size:12px; box-shadow:0 0 10px #ec4899; text-align:center;">🏪</div>',
+            iconSize: [30, 30]
+        });
+
+        const bikeIcon = L.divIcon({
+            html: '<div style="background:#3b82f6; color:white; padding:6px; border-radius:50%; font-size:12px; box-shadow:0 0 14px #3b82f6; text-align:center;">🛵</div>',
+            iconSize: [34, 34]
+        });
+
+        const homeIcon = L.divIcon({
+            html: '<div style="background:#10b981; color:white; padding:6px; border-radius:50%; font-size:12px; box-shadow:0 0 10px #10b981; text-align:center;">🏠</div>',
+            iconSize: [30, 30]
+        });
+
+        L.marker(storeLatLng, {icon: storeIcon}).addTo(map).bindPopup("<b>QuickBite Dark Store</b>");
+        const bikeMarker = L.marker(storeLatLng, {icon: bikeIcon}).addTo(map).bindPopup("<b>Rahul is on the way!</b>");
+        L.marker(userLatLng, {icon: homeIcon}).addTo(map).bindPopup("<b>Your Delivery Destination</b>");
+
+        const streetPathPoints = [
+            storeLatLng,
+            [11.9150, 79.8150],
+            [11.9130, 79.8165],
+            [11.9135, 79.8190],
+            [11.9120, 79.8205],
+            userLatLng
+        ];
+
+        const polyline = L.polyline(streetPathPoints, {
+            color: '#ec4899',
+            weight: 5,
+            opacity: 0.85,
+            lineCap: 'round',
+            lineJoin: 'round'
+        }).addTo(map);
+
+        map.fitBounds(polyline.getBounds(), {padding: [40, 40]});
+
+        let totalSeconds = 450;
+        let pathIndex = 0;
+        const totalPoints = streetPathPoints.length;
+        const timerElement = document.getElementById("countdown-timer");
+        const statusText = document.getElementById("status-text");
+        const step3 = document.getElementById("step-3");
+        const riderStatus = document.getElementById("rider-status");
+
+        let isBraking = false;
+
+        const timerInterval = setInterval(() => {
+            if (totalSeconds > 0 && !isBraking) {
+                totalSeconds--;
+                let minutes = Math.floor(totalSeconds / 60);
+                let seconds = totalSeconds % 60;
+                timerElement.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+
+        const movementInterval = setInterval(() => {
+            if (Math.random() < 0.25 && pathIndex < totalPoints - 1) {
+                isBraking = true;
+                riderStatus.innerHTML = "★ 4.9 • Applying Brakes / Traffic Halt 🛑";
+                setTimeout(() => {
+                    isBraking = false;
+                    riderStatus.innerHTML = "★ 4.9 • Moving Smoothly 🟢";
+                }, 3000);
+                return;
+            }
+
+            if (pathIndex < totalPoints - 1) {
+                pathIndex++;
+                bikeMarker.setLatLng(streetPathPoints[pathIndex]);
+            } else {
+                clearInterval(movementInterval);
+                clearInterval(timerInterval);
+                timerElement.innerText = "Arrived!";
+                statusText.innerText = "Delivered";
+                riderStatus.innerHTML = "★ 4.9 • Order Delivered Successfully ✨";
+                step3.className = "bg-pink-600/20 border border-pink-500/40 p-3 rounded-2xl opacity-100 transition-all duration-500";
+            }
+        }, 3500);
+    });
+</script>
+{% endblock %}

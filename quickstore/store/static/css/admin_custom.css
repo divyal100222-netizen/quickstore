@@ -1,0 +1,36 @@
+﻿/* QuickBite Full Admin Dark Mode Styles */
+html, body, .wrapper, body.admin-index, .content-wrapper, .main-footer {
+    background-color: #020617 !important;
+    color: #f8fafc !important;
+}
+
+/* Navbar & Sidebar */
+.main-header.navbar {
+    background-color: #0f172a !important;
+    border-bottom: 1px solid #1e293b !important;
+}
+
+.main-sidebar, .sidebar-dark-primary, .brand-link {
+    background-color: #090d16 !important;
+    border-color: #1e293b !important;
+}
+
+/* Dashboard Cards & Panels */
+.card {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border: 1px solid #1e293b !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4) !important;
+}
+
+.card-header {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155 !important;
+    color: #f8fafc !important;
+}
+
+/* Table Text */
+table, .table {
+    color: #f8fafc !important;
+}

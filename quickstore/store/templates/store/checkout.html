@@ -1,0 +1,34 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-white p-8 rounded-3xl shadow-xl border border-pink-100">
+    <h2 class="text-2xl font-black text-pink-600 mb-6">📍 Enter Delivery Address</h2>
+    
+    <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1 uppercase">Full Address</label>
+           <textarea name="address" rows="3" placeholder="House no, Street name, Landmark..." 
+           class="w-full bg-slate-800/80 text-white placeholder-gray-400 border border-pink-500/30 rounded-2xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+           </textarea>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1 uppercase">Payment Method</label>
+            <div class="space-y-2">
+                <label class="flex items-center space-x-3 p-3 bg-pink-50 rounded-xl border border-pink-200 cursor-pointer">
+                    <input type="radio" name="payment" checked class="text-pink-600">
+                    <span class="font-bold text-sm text-gray-700">⚡ UPI / Google Pay / PhonePe</span>
+                </label>
+                <label class="flex items-center space-x-3 p-3 bg-pink-50 rounded-xl border border-pink-200 cursor-pointer">
+                    <input type="radio" name="payment" class="text-pink-600">
+                    <span class="font-bold text-sm text-gray-700">💵 Cash on Delivery</span>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-3.5 rounded-2xl font-bold shadow-md transition mt-4">
+            Place Order & Track Live 🚀
+        </button>
+    </form>
+</div>
+{% endblock %}

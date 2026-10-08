@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}QuickBite - Family & Kids Express{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fredoka', sans-serif; background-color: #0b0f19; color: #f8fafc; }
+        .family-gradient { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Family Announcement Bar -->
+    <div class="family-gradient text-white text-xs font-medium py-2 px-4 text-center tracking-wide flex justify-center items-center space-x-6 shadow-inner">
+        <span>🌸 Curated Specially for Moms & Family</span>
+        <span class="hidden md:inline">•</span>
+        <span>⚡ Lightning Fast 10-Min Delivery</span>
+        <span class="hidden md:inline">•</span>
+        <span>🧸 Safe Toys & Healthy Treats</span>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-pink-500/25 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="{% url 'home' %}" class="flex items-center space-x-3 group">
+                <div class="w-11 h-11 rounded-2xl family-gradient flex items-center justify-center text-white font-black text-xl shadow-lg shadow-pink-500/30 transform group-hover:scale-105 transition">
+                    🧸
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-tight text-white">Quick<span class="text-pink-400">Bite</span></span>
+                    <span class="block text-[10px] text-pink-300 font-semibold tracking-wider uppercase">Family & Kids Hub</span>
+                </div>
+            </a>
+
+            <!-- Quick Location & Action Links -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <div class="hidden lg:flex items-center bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 text-xs text-slate-300">
+                    <span class="text-pink-400 mr-1.5 font-bold">📍 Delivering to:</span> Mudaliarpet ▼
+                </div>
+
+                <!-- Admin Dashboard Link -->
+                <a href="/admin/" title="Admin Panel" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-2 rounded-xl text-xs transition border border-slate-700 flex items-center space-x-1">
+                    <span>⚙️</span>
+                    <span class="hidden md:inline">Admin</span>
+                </a>
+
+                <!-- User Profile Link -->
+                <a href="{% url 'profile' %}" title="User Profile" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-2 rounded-xl text-xs transition border border-slate-700 flex items-center space-x-1">
+                    <span>👤</span>
+                    <span class="hidden md:inline">Profile</span>
+                </a>
+
+                <!-- Delivery Partner Dashboard Link -->
+                <a href="{% url 'delivery_dashboard' %}" title="Delivery Partner Dashboard" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-2 rounded-xl text-xs transition border border-slate-700 flex items-center space-x-1">
+                    <span>🚀</span>
+                    <span class="hidden md:inline">Delivery</span>
+                </a>
+
+                <!-- Cart Button -->
+                <a href="{% url 'cart' %}" class="relative bg-pink-600 hover:bg-pink-500 text-white px-4 py-2.5 rounded-2xl shadow-lg shadow-pink-600/30 transition flex items-center space-x-1.5">
+                    <span class="text-base">🛒</span>
+                    <span class="font-bold text-xs sm:text-sm">Cart</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Warm Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-8 text-center text-xs text-slate-400">
+        <p>Made with 💖 for Moms, Kids, and Families everywhere. Delivered in 10 minutes!</p>
+    </footer>
+
+</body>
+</html>

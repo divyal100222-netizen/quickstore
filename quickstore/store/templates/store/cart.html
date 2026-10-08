@@ -1,0 +1,86 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto py-4">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl md:text-3xl font-black text-white flex items-center space-x-2">
+            <span>🛒</span><span>Your Family Cart</span>
+        </h1>
+        <span class="bg-pink-500/20 border border-pink-500/30 text-pink-300 text-xs font-bold px-3 py-1.5 rounded-full">
+            ⚡ 10-Min Delivery Enabled
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Cart Items List -->
+        <div class="md:col-span-2 space-y-4">
+            {% if cart_items %}
+                {% for item in cart_items %}
+                <div class="bg-slate-900/80 backdrop-blur-md border border-pink-500/20 p-4 rounded-3xl flex items-center justify-between shadow-lg">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center text-xl border border-pink-500/30">
+                            🧸
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">{{ item.product.name }}</h3>
+                            <p class="text-xs text-gray-400">₹{{ item.product.price }} x {{ item.quantity }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <span class="font-black text-pink-400 text-base">₹{{ item.total_price }}</span>
+                        
+                        <!-- Fixed Stepper: Stays on cart view -->
+                        <div class="flex items-center bg-rose-600 text-white rounded-xl overflow-hidden shadow-sm">
+                            <a href="{% url 'decrease_cart' item.product.id %}" class="px-2.5 py-1 text-xs font-bold hover:bg-rose-750 transition">-</a>
+                            <span class="px-2 text-xs font-black">{{ item.quantity }}</span>
+                            <a href="{% url 'add_to_cart' item.product.id %}?next=cart" class="px-2.5 py-1 text-xs font-bold hover:bg-rose-750 transition">+</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="bg-slate-900/80 backdrop-blur-md border border-pink-500/20 p-10 rounded-3xl text-center">
+                    <p class="text-3xl mb-2">🛒</p>
+                    <p class="text-white font-bold text-base mb-1">Your cart feels a bit light!</p>
+                    <a href="{% url 'home' %}" class="bg-gradient-to-r from-pink-600 to-rose-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg inline-block transition hover:scale-105 mt-3">Explore Treasures</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Bill Summary & Checkout Box -->
+        <div class="bg-slate-900/80 backdrop-blur-md border border-pink-500/20 p-6 rounded-3xl h-fit shadow-xl">
+            <h2 class="font-black text-white text-base mb-4 pb-2 border-b border-gray-800">Bill Details</h2>
+            
+            <div class="space-y-2 text-xs text-gray-300 mb-4">
+                <div class="flex justify-between">
+                    <span>Items Total</span>
+                    <span class="font-bold text-white">₹{{ total_price|default:"0" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Delivery Partner Fee</span>
+                    <span class="text-emerald-400 font-bold">FREE</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Instant Handling Charge</span>
+                    <span class="font-bold text-white">₹5</span>
+                </div>
+            </div>
+
+            <div class="flex justify-between font-black text-white text-base pt-3 border-t border-gray-800 mb-6">
+                <span>Total Amount</span>
+                <span class="text-pink-400">₹{{ final_total|default:"5" }}</span>
+            </div>
+
+            {% if cart_items %}
+            <a href="{% url 'checkout' %}" class="w-full bg-gradient-to-r from-pink-600 to-rose-600 text-white font-black py-3 rounded-2xl text-xs uppercase tracking-wider block text-center shadow-lg transition hover:scale-[1.02]">
+                Proceed to Checkout 🚀
+            </a>
+            {% else %}
+            <button disabled class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-2xl text-xs uppercase tracking-wider cursor-not-allowed">
+                Cart is Empty
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

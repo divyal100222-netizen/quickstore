@@ -1,0 +1,72 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<!-- Hero Section -->
+<div class="relative overflow-hidden rounded-3xl family-gradient p-8 md:p-12 mb-10 text-white shadow-2xl">
+    <div class="relative z-10 max-w-2xl">
+        <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm border border-white/30 inline-block mb-4">
+            🌟 MOM'S CHOICE • KIDS' FAVORITE 🚀
+        </span>
+        <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
+            Delivering Joy & Goodies in 10 Mins!
+        </h1>
+        <p class="text-pink-100 text-sm md:text-base mb-8 leading-relaxed">
+            From wholesome breakfast milk & healthy snacks to surprise toys and sweet treats—everything your family needs, instantly.
+        </p>
+        
+        <!-- Search Bar -->
+        <form method="get" class="flex items-center bg-white rounded-2xl p-2 shadow-xl">
+            <input type="text" name="q" placeholder="Search toys, chocolates, milk, diapers..." 
+                   class="w-full px-4 py-2 text-slate-800 text-sm focus:outline-none bg-transparent">
+            <button type="submit" class="bg-gradient-to-r from-pink-600 to-rose-500 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition">
+                Search
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Category Filter Pills -->
+<div class="flex items-center space-x-3 overflow-x-auto pb-4 mb-8 scrollbar-none">
+    <a href="{% url 'product_list' %}" class="bg-pink-600 text-white px-5 py-2.5 rounded-2xl font-bold text-sm shadow-md shadow-pink-600/30 whitespace-nowrap">
+        ✨ All Treasures
+    </a>
+    {% for cat in categories %}
+    <a href="{% url 'product_list' %}?category={{ cat.name|urlencode }}" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2.5 rounded-2xl font-semibold text-sm border border-slate-700 transition whitespace-nowrap">
+        {{ cat.name }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Product Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+    {% for product in products %}
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex flex-col justify-between group hover:border-pink-500/40 transition shadow-xl">
+        <div>
+            {% if product.image %}
+            <div class="h-40 rounded-2xl overflow-hidden bg-slate-800 mb-4 relative">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                <span class="absolute top-2 left-2 bg-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">⚡ 10 mins</span>
+            </div>
+            {% endif %}
+            <h3 class="font-bold text-white text-base mb-1 line-clamp-1">{{ product.name }}</h3>
+            <p class="text-slate-400 text-xs mb-3 line-clamp-2">{{ product.description }}</p>
+        </div>
+        
+        <div class="flex items-center justify-between mt-2 pt-3 border-t border-slate-800/80">
+            <div>
+                <span class="text-xs text-slate-400 block">Price</span>
+                <span class="text-lg font-black text-pink-400">₹{{ product.price }}</span>
+            </div>
+            <a href="{% url 'add_to_cart' product.id %}" class="bg-gradient-to-r from-pink-600 to-rose-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-pink-600/30 hover:scale-105 transition">
+                + Add
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full py-16 text-center">
+        <div class="text-5xl mb-3">🧸🎈</div>
+        <h3 class="text-lg font-bold text-slate-200">No goodies found!</h3>
+        <p class="text-slate-400 text-sm">Try searching for something else like snacks or toys.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
